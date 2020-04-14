@@ -86,7 +86,7 @@ amqp.connect(CONN_URL, async function (error0, connection) {
                                 resolve();
 
                                 //  ch.close();
-                            }, 1000)
+                            }, 500)
 
                         });
                     })
