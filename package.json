@@ -1,0 +1,26 @@
+{
+  "name": "agrippa-product-details-queue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "async-redis": "^1.1.7",
+    "crawler": "^1.2.1",
+    "query-string": "^6.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmach/agrippa-product-details-queue.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmach/agrippa-product-details-queue/issues"
+  },
+  "homepage": "https://github.com/mmach/agrippa-product-details-queue#readme"
+}
