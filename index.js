@@ -48,6 +48,10 @@ amqp.connect(CONN_URL, async function (error0, connection) {
                         arrayProduct.push(obj);
                         resolve();
                     }
+                    else if (obj.source == 'BLOMSTERLANDET.SE') {
+                        arrayProduct.push(obj);
+                        resolve();
+                    }
                 })
 
 
