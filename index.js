@@ -5,7 +5,7 @@ var Promise = require('bluebird');
 const CONN_URL = process.env.AMQP ? process.env.AMQP : 'amqp://oqxnmzzs:hUxy1BVED5mg9xWl8lvoxw3VAmKBOn7O@squid.rmq.cloudamqp.com/oqxnmzzs';
 const PREFETCH = process.env.PREFETCH ? process.env.PREFETCH : 5;
 const MAX_CONNECTIONS = process.env.MAX_CONNECTIONS ? process.env.MAX_CONNECTIONS : 10;
-
+const obs = require('./OBS/index.js')
 global.c = new Crawler({
     maxConnections: MAX_CONNECTIONS,
     retries: 30,
@@ -49,6 +49,29 @@ amqp.connect(CONN_URL, async function (error0, connection) {
                         resolve();
                     }
                     else if (obj.source == 'BLOMSTERLANDET.SE') {
+                        arrayProduct.push(obj);
+                        resolve();
+                    }
+                    else if (obj.source == 'OBS') {
+                        global.obs_crawler.queue({
+                            uri: obj.href,
+                            forceUTF8: false,
+                            headers: {
+                                "Content-Type": "application/json",
+                                "sec-fetch-site": "same-origin",
+                                "sec-fetch-mode": "navigate",
+                                "sec-fetch-user": "?1",
+                                "upgrade-insecure-requests": 1,
+                                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"
+
+
+                            },
+                            skipDuplicates: true
+
+                        })
+                        // arrayProduct.push(obj);
+                        resolve();
+                    } else if (['OBS_BYGG', 'OBS_SORTIMENT'].includes(obj.source)) {
                         arrayProduct.push(obj);
                         resolve();
                     }
