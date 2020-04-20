@@ -13,7 +13,11 @@ global.c = new Crawler({
 
 });
 
-
+global.obs_crawler = new Crawler({
+    maxConnections: 5,
+    retries: 30,
+    retryTimeout: 60000,
+});
 
 // Queue just one URL, with default callback
 
@@ -53,24 +57,10 @@ amqp.connect(CONN_URL, async function (error0, connection) {
                         resolve();
                     }
                     else if (obj.source == 'OBS') {
-                        global.obs_crawler.queue({
-                            uri: obj.href,
-                            forceUTF8: false,
-                            headers: {
-                                "Content-Type": "application/json",
-                                "sec-fetch-site": "same-origin",
-                                "sec-fetch-mode": "navigate",
-                                "sec-fetch-user": "?1",
-                                "upgrade-insecure-requests": 1,
-                                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"
-
-
-                            },
-                            skipDuplicates: true
-
-                        })
+                        obs.add_to_to_queue(obj.href,resolve);
+                        
                         // arrayProduct.push(obj);
-                        resolve();
+                       // resolve();
                     } else if (['OBS_BYGG', 'OBS_SORTIMENT'].includes(obj.source)) {
                         arrayProduct.push(obj);
                         resolve();
