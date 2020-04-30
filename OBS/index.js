@@ -34,7 +34,7 @@ let add_to_to_queue = (href, resolve) => {
                 console.log("#############ERROR############")
                 console.log(error);
                 setTimeout(() => {
-
+                    resolve();
                     done();
                 }, 60000)
             } else {

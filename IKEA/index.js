@@ -77,7 +77,6 @@ let add_to_to_queue = (obj, resolve) => {
                         setTimeout(() => {
                             done();
                             resolve();
-                            conn.close();
 
                         }, 60000)
                         return;
