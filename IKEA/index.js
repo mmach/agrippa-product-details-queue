@@ -7,10 +7,10 @@ const amqp = require('amqplib/callback_api');
 
 const CONN_URL = process.env.AMQP ? process.env.AMQP : 'amqp://oqxnmzzs:hUxy1BVED5mg9xWl8lvoxw3VAmKBOn7O@squid.rmq.cloudamqp.com/oqxnmzzs';
 
-let add_to_to_queue = (href, resolve) => {
+let add_to_to_queue = (obj, resolve) => {
 
     global.obs_crawler.queue({
-        uri: href,
+        uri: obj.href,
         forceUTF8: false,
         headers: {
             "Content-Type": "application/json",
@@ -40,50 +40,36 @@ let add_to_to_queue = (href, resolve) => {
             } else {
                 var $ = res.$;
                 //  console.log(res.body)
-                let productsList = $('[type="application/ld+json"]');
-                //     console.log(productsList);
-                let group = {}
+                //      let name = $('.product-compact__name').children[0].data;
+                let prod = {};
+                try {
+                    let name = $('.product-compact__name')["0"].children[0].data;
+                    let external_id = $('.product-compact')[0].attribs["data-ref-id"]
+                    let price = $('.product-compact')[0].attribs["data-price"]
+                    let currency = $('.product-compact')[0].attribs["data-currency"]
+                    let status = $('.product-compact')[0].attribs["data-online-sellable"]
+                    prod = {
+                        source: 'IKEA',
+                        external_id: external_id,
+                        group: obj.title,
+                        link: obj.href,
+                        product: name,
+                        price: price,
+                        currency: currency,
+                        status:status=='true'?'online-sellable':''
 
-                let products = []
-                Object.keys(productsList).filter(item => {
-                    return isNaN(item) == false
-                }).map(item => {
-                    if (productsList[item].children[0].data.includes(`"@type":"Product"`)) {
-                        let obj = JSON.parse(productsList[item].children[0].data)
-                        obj.offers.offers.forEach(offer => {
-                            products.push(
-                                {
-                                    source: 'OBJ_PROCESSED',
-                                    external_id: obj.gtin13 + "-" + offer.variantCode,
-                                    //group: obj.title,
-                                    link: offer.url,
-                                    product: obj.name,
-                                    price: offer.price,
-                                    currency: offer.priceCurrency,
-                                    // prom: prom,
-                                    status: offer.availability.split('/')[3],
-                                    //  subgroup: subgroup,
-                                    name_lng: obj.description,
-                                    image: obj.image,
-                                    GTIN: obj.gtin13
-
-                                });
-                        })
-
-                    } else if (productsList[item].children[0].data.includes(`"@type":"BreadcrumbList"`)) {
-                        group = JSON.parse(productsList[item].children[0].data);
                     }
-                });
-                products = products.map(item => {
+                }
+                catch (err) {
+                    console.log(err);
+                    done();
+                    resolve();
+                }
 
-                    item.source = group.itemListElement[0].item["@id"] == 'http://coop.no/obsbygg/' ? 'OBS_BYGG' : 'OBS_SORTIMENT'
-                    item.group = group.itemListElement[group.itemListElement.length - 1].item.name
-                    return item;
-                })
+                //     console.log(productsList);
 
 
                 var client = null;
-
                 amqp.connect(CONN_URL, function (err, conn) {
                     if (err) {
                         console.log("CONNECTION ERROR");
@@ -112,9 +98,8 @@ let add_to_to_queue = (href, resolve) => {
                             durable: true
                         });
 
-                        products.forEach(item => {
-                            ch.sendToQueue('product-item-queue', new Buffer(JSON.stringify(item)), { persistent: true });
-                        })
+
+                        ch.sendToQueue('product-item-queue', new Buffer(JSON.stringify(prod)), { persistent: true });
                         setTimeout(() => {
                             channel.close();
                             conn.close();
@@ -124,7 +109,6 @@ let add_to_to_queue = (href, resolve) => {
 
                     });
                 })
-                console.log(products);
 
                 //console.log(obj.href)
                 //console.log(nextPage);

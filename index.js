@@ -6,6 +6,8 @@ const CONN_URL = process.env.AMQP ? process.env.AMQP : 'amqp://oqxnmzzs:hUxy1BVE
 const PREFETCH = process.env.PREFETCH ? process.env.PREFETCH : 5;
 const MAX_CONNECTIONS = process.env.MAX_CONNECTIONS ? process.env.MAX_CONNECTIONS : 10;
 const obs = require('./OBS/index.js')
+const ikea = require('./IKEA/index.js')
+
 global.c = new Crawler({
     maxConnections: MAX_CONNECTIONS,
     retries: 30,
@@ -48,20 +50,20 @@ amqp.connect(CONN_URL, async function (error0, connection) {
             try {
 
                 await new Promise((resolve, reject) => {
-                    if (obj.source == 'HAGELAND.NO') {
-                        arrayProduct.push(obj);
-                        resolve();
-                    }
-                    else if (obj.source == 'BLOMSTERLANDET.SE') {
-                        arrayProduct.push(obj);
-                        resolve();
-                    }
-                    else if (obj.source == 'OBS') {
-                        obs.add_to_to_queue(obj.href,resolve);
-                        
+
+                    if (obj.source == 'OBS') {
+                        obs.add_to_to_queue(obj.href, resolve);
+
                         // arrayProduct.push(obj);
-                       // resolve();
-                    } else if (['OBS_BYGG', 'OBS_SORTIMENT'].includes(obj.source)) {
+                        // resolve();
+                    }
+                    else if (obj.source == 'IKEA_PREPROCESSED') {
+                        ikea.add_to_to_queue(obj, resolve);
+
+                        // arrayProduct.push(obj);
+                        // resolve();
+                    }
+                    else if (['OBS_BYGG', 'OBS_SORTIMENT', 'BLOMSTERLANDET.SE', 'HAGELAND.NO', 'IKEA'].includes(obj.source)) {
                         arrayProduct.push(obj);
                         resolve();
                     }
