@@ -43,11 +43,12 @@ let add_to_to_queue = (obj, resolve) => {
                 //      let name = $('.product-compact__name').children[0].data;
                 let prod = {};
                 try {
-                    let name = $('.product-compact__name')["0"].children[0].data;
-                    let external_id = $('.product-compact')[0].attribs["data-ref-id"]
-                    let price = $('.product-compact')[0].attribs["data-price"]
-                    let currency = $('.product-compact')[0].attribs["data-currency"]
-                    let status = $('.product-compact')[0].attribs["data-online-sellable"]
+                 
+                    let name = $('.product-compact__name')["0"]?$('.product-compact__name')["0"].children[0].data:$('.range-revamp-product-compact')[0].attribs["data-product-name"];
+                    let external_id = $('.product-compact')[0]?$('.product-compact')[0].attribs["data-ref-id"]: $('.range-revamp-product-compact')[0].attribs["data-product-number"]
+                    let price = $('.product-compact')[0]?$('.product-compact')[0].attribs["data-price"]:$('.range-revamp-product-compact')[0].attribs["data-price"]
+                    let currency = $('.product-compact')[0]?$('.product-compact')[0].attribs["data-currency"]:$('.range-revamp-product-compact')[0].attribs["data-currency"]
+                    let status = $('.product-compact')[0]?$('.product-compact')[0].attribs["data-online-sellable"]:$('.range-revamp-product-compact')[0].attribs["data-product-type"]
                     prod = {
                         source: 'IKEA',
                         external_id: external_id,

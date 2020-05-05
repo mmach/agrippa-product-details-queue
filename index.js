@@ -63,7 +63,7 @@ amqp.connect(CONN_URL, async function (error0, connection) {
                         // arrayProduct.push(obj);
                         // resolve();
                     }
-                    else if (['OBS_BYGG', 'OBS_SORTIMENT', 'BLOMSTERLANDET.SE', 'HAGELAND.NO', 'IKEA'].includes(obj.source)) {
+                    else if (['OBS_BYGG', 'OBS_SORTIMENT', 'BLOMSTERLANDET.SE', 'HAGELAND.NO', 'IKEA','EUROPRIS'].includes(obj.source)) {
                         arrayProduct.push(obj);
                         resolve();
                     }
